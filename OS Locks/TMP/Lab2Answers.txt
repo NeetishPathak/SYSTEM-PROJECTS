@@ -1,0 +1,107 @@
+﻿PA 2 extra question						npathak2@ncsu.edu
+
+1. The priority inversion problem could cause that a higher-priority process needs to wait for the completion of a lower-priority process. 
+1. Priority inheritance is one approach to address this issue. Please give another approach and briefly describe its idea. 
+
+
+Answer:
+
+Another approach to address the issue of priority inversion is priority ceilings or priority boosting. In this approach, a lower priority thread that acquires a lock has its priority temporarily increased to the ceiling priority (ceiling priority is the highest priority of any task that may lock the resource)
+Source: Wikipedia
+There are two variants of this protocol
+Original ceiling Priority Protocol: In this scheme, a process X’s priority is raised to ceiling priority of the resource when a high priority task tries to acquire the resource that X has blocked.
+
+Immediate Ceiling Priority Protocol: In this scheme, a process’s priority is immediately boosted to ceiling priority when it locks a resource.
+
+There could be another approach where one is to turn off all system interrupts, effectively halting thread preemption in the system, while critical tasks execute. However, to make this work, you cannot implement more than two thread priorities, and critical sections where resources are locked need to be very brief and tightly controlled. 
+Source: http://www.drdobbs.com/jvm/what-is-priority-inversion-and-how-do-yo/230600008
+
+
+
+
+2. Design a test case to show that your approach can address the priority inversion problem. You should compare the results that derived from the original XINU implementation (use semaphore) and that derived from your implementation (use readers/writer locks). Put your results in Lab2Answers.txt and your test case program (name it task1.c) in both ./sys and ./TMP 
+
+With locks:
+I made three writer tasks: LA min priority, LB medium priority, LC highest priority
+Schedule LA first, acquire locks
+then schedule LB just make it run.
+Now it will not allow LA to schedule, so LA is not able to release locks
+Schedule LC, priority inheritance takes place, LA’s priority increases and it finishes before B and then C gets scheduled
+So order is LA, LC and LB (ACB)
+With semaphores, the since the priority inheritance is not implemented, writer A will schedule only if B finishes, so the order will be B, A, C (BAC)
+This can be seen in the following logs by running task1.c
+
+
+---------------------Lock Test-----------------------------
+Show priority Inversion Solved with Priority Inheritance
+-start writer A, then sleep 1s. lock granted to writer A (prio 10)
+Writer LA Entry
+  A: to acquire lock
+  A: acquired lock
+-start writer B(Prio 20), then sleep 1s. writer B will start running due to higher prio than writer A
+Writer LB Entry
+Loop running In writer B
+-start writer C, then sleep 1s. writer C (prio 30) blocked on the lock
+Writer LC Entry
+  C: to acquire lock
+  A: to release lock
+  C: acquired lock
+Lock Test COMPLETE
+Writer LA Exit
+  C: to release lock
+Writer LC Exit
+Writer LB Exit
+------------------------------------------------------------
+--------------Semaphore Test------------------------
+Show priority Inversion Not Solved in Semaphores
+-start writer A, then sleep 1s. lock granted to writer A (prio 20)
+Writer SA Entry
+  A: to acquire semaphore
+  A: acquired semaphore
+-start writer B, then sleep 1s. writer B will start running due to higher prio than writer A
+Writer SB Entry
+-start writer C, then sleep 1s. writer C (prio 30) blocked on the lock
+Writer SC Entry
+  C: to acquire semaphore
+Writer SB Exit
+  A: to release semaphore
+  C: acquired semaphore
+Writer SA Exit
+  C: to signal semaphore
+Writer SC Exit
+Semaphore Test COMPLETE
+				
+
+
+
+
+
+2. Synchronization is a quite complex issue in operating systems. To show your understanding about process synchronization, you are asked to point out a reader/writer synchronization issue in this pesudo-code: task2_sync_issue.c. Multiple reader threads can execute this code concurrently by calling do_update. All the variables starting with global_ are global variables. You are asked to describe the potential issue caused by the incorrect synchronization and point out at least one possible thread interleaving that would trigger the problem. Put your answer in Lab2Answers.txt mentioned above. 
+
+Answer:
+
+There could be multiple Reader threads calling do_update and acquiring the LOCK . 
+Also, the semaphore count is 10, hence atmax 10 Reader processes can acquire the semaphore and proceed to perform the buffer_add on the global_buf. 
+
+In such a scenario, it is possible that two threads running concurrently perform the memory write at the same location in the buffer which would lead to overwriting. 
+(Reader threads have write privileges in the given scenario)
+
+A possible interleaving would be as follows:
+
+There are two reader threads T1 & T2 
+
+Thread T1 is currently running,
+Thread T1, acquires the lock  and calls try_update
+T1 acquires the semaphore and reduces semaphore count to 9 and calls buffer_add
+Thread T1 calls the memcpy function but before it updates the buf->len it’s time quantum expires and thread T2 gets scheduled which is also a READER thread
+Since it can also acquire the lock as well the semaphore, it subsequently calls buffer_add. But since, the  
+buf_len value was not updated by the thread T1, T2 starts writing from the same location as T1 did which would result in over-writing at the same index in buffer.
+
+
+So, the major issue is giving writng access to the READER threads
+
+Some issues with the implementation are following:
+
+The Reader threads are Write operations
+The Write operation is not thread-safe. Two threads can acquire semaphore and execute buffer over-write as explained above.
+

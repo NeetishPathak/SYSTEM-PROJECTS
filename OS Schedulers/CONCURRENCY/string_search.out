@@ -1,0 +1,10 @@
+blockSize: 12977333	 numOfThread: 1	matchCount: 278	 runningTime: 66391 us
+blockSize: 6488667	 numOfThread: 2	matchCount: 278	 runningTime: 36209 us
+blockSize: 4325778	 numOfThread: 3	matchCount: 278	 runningTime: 38555 us
+blockSize: 3244334	 numOfThread: 4	matchCount: 278	 runningTime: 41075 us
+blockSize: 2595467	 numOfThread: 5	matchCount: 278	 runningTime: 40717 us
+blockSize: 2162889	 numOfThread: 6	matchCount: 278	 runningTime: 42797 us
+blockSize: 1853905	 numOfThread: 7	matchCount: 278	 runningTime: 43088 us
+blockSize: 1622167	 numOfThread: 8	matchCount: 278	 runningTime: 44836 us
+blockSize: 1441926	 numOfThread: 9	matchCount: 278	 runningTime: 47107 us
+blockSize: 1297734	 numOfThread: 10	matchCount: 278	 runningTime: 46125 us
