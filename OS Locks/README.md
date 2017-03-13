@@ -36,25 +36,21 @@ lcreate.c, ldelete.c, linit.c, lock.c, releaseall.c (These are the files that ar
 
 linit.c : initialize a data structure for stroing locks
 
-'''
-struct lentry lockList[NLOCKS];
-int nextlock;
 
-void linit(){
-	
-	struct lentry *lptr;
-	int i=0;
-	nextlock = NLOCKS-1;
-	
-	/*initialize all the locks*/
+				struct lentry lockList[NLOCKS];
+				int nextlock;
+				void linit(){
+					struct lentry *lptr;
+					int i=0;
+					nextlock = NLOCKS-1;
 
-	for(i = 0; i < NLOCKS; ++i){
-		
-		(lptr = &lockList[i])->lstate = LFREE;
-		lptr->lqtail = 1 + (lptr->lqhead = newqueue());
-		lptr->lprocbitmask = 0;
-		lptr->counter = 0;
-	}
+					/*initialize all the locks*/
 
-}
-'''
+					for(i = 0; i < NLOCKS; ++i){
+						(lptr = &lockList[i])->lstate = LFREE;
+						lptr->lqtail = 1 + (lptr->lqhead = newqueue());
+						lptr->lprocbitmask = 0;
+						lptr->counter = 0;
+					}
+				}
+
