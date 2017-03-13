@@ -7,7 +7,8 @@ The default scheduler in Xinu schedules processes based on the highest priority.
 The two scheduling policies that you need to implement, as described as follows, should address this problem. Note that for each of them, you need to consider how to handle the NULL process, so that this process is selected to run when and only when there are no other ready processes.
 
 For Linux-like scheduling policies, the value of a valid process priority is an integer between 0 to 99, where 99 is the highest priority.
-1) Exponential Distribution Scheduler
+
+####1) Exponential Distribution Scheduler
 
 The first scheduling policy is the exponential distribution scheduler. This scheduler chooses the next process based on a random value that follows the exponential distribution. When a rescheduling occurs, the scheduler generates a random number with the exponential distribution, and chooses a process with the lowest priority that is greater than the random number. If the random value is less than the lowest priority in the ready queue, the process with the lowest priority is chosen. If the random value is no less than the highest priority in the ready queue, the process with the largest priority is chosen. When there are processes having the same priority, they should be scheduled in a round-robin way. (HINT: The moment you insert a process into the ready queue, the queue is ordered.)
 
@@ -17,22 +18,24 @@ In order to implement an exponential distribution scheduler, you need to impleme
 
 Implementation:
 
-double expdev(double lambda) {
-    double dummy;
-    do
-        dummy= (double) rand() / RAND_MAX;
-    while (dummy == 0.0);
-    return -log(dummy) / lambda;
-}
+	double expdev(double lambda) {
+	    double dummy;
+	    do
+		dummy= (double) rand() / RAND_MAX;
+	    while (dummy == 0.0);
+	    return -log(dummy) / lambda;
+	}
 	
 
 Implementation Tips: Since Xinu does not provide any math library (i.e., math.h), you will implement log() by yourself. For log() implementation, you can use Taylor series (http://en.wikipedia.org/wiki/Taylor_series), where n = 20 can give an reasonable approximation. Note that Xinu does not offer any format to print out a floating number, so you can first test your code with gcc in Linux and use it in Xinu. You can also roughly test it in Xinu by casting, e.g. kprintf("%d", (int) log(20)). You will also have to implement pow(). You are recommended to put expdev(), log(), and pow() in math.c and add it to Makefile. On the other hand, srand() and rand() functions are offered in lib/libxc/rand.c by Xinu.
-double log(double x);
-double pow(double x, int y);
-double expdev(double lambda);
+
+	double log(double x);
+	double pow(double x, int y);
+	double expdev(double lambda);
 
 Comment: As the value of λ, use 0.1. The mean of the exponential distribution is 1/λ, so it is 10 for λ = 0.1. Since the priority ranges from 0 to 99, 10 can be meaningful. The λ value may be changed for a different scheduling property, but your code will be tested for λ = 0.1.
-2) Linux-like Scheduler (based loosely on the Linux kernel 2.2)
+
+####2) Linux-like Scheduler (based loosely on the Linux kernel 2.2)
 
 This scheduling algorithm loosely emulates the Linux scheduler in the 2.2 kernel. We consider all the processes "conventional processes" and use the policies of the SCHED_OTHER scheduling class within the 2.2 kernel. In this algorithm, the scheduler divides CPU time into continuous epochs. In each epoch, every existing process is allowed to execute up to a given time quantum, which specifies the maximum allowed time for a process within the current epoch. The time quantum for a process is computed and refreshed at the beginning of each epoch. If a process has used up its quantum during an epoch, it cannot be scheduled until another epoch starts. For example, a time quantum of 10 allows a process to only execute for 10 ticks (10 timer interrupts) within an epoch. On the other hand, a process can be scheduled many times as long as it has not used up its time quantum. For example, a process may invoke sleep before using up its quantum, but still be scheduled after waking up within an epoch. The scheduler ends an epoch and starts a new one when all the runnable processes (i.e., processes in the ready queue) have used up their time.
 
@@ -43,7 +46,9 @@ To schedule processes during each epoch, the scheduler introduces a goodness val
 Examples of how processes should be scheduled under this scheduler are as follows:
 If there are processes P1, P2, P3 with priority 10, 20, 15, the initial time quantum for each process would be P1 = 10, P2 = 20, and P3 = 15, so the maximum CPU time for an epoch would be 10 + 20 + 15 = 45. The possible schedule for two epochs would be P2, P3, P1, P2, P3, P1, but not: P2, P3, P2, P1, P3, P1.
 If P1 yields in the middle of its execution (e.g., by invoking sleep) in the first epoch, the time quantum for each process in the second epoch could be P1 = 12, P2 = 20, and P3 = 15, thereby the maximum CPU time would be 12 + 20 + 15 = 47.
-3) Other Implementation Details
+
+####3) Other Implementation Details
+
 1. void setschedclass (int sched_class)
       This function should change the scheduling type to either EXPDISTSCHED or LINUXSCHED.
 
