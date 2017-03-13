@@ -1,5 +1,6 @@
+###Problem Statement
 
-1. Introduction
+####1. Introduction
 
 You are going to implement readers/writer locks as described in this handout. Additionally, you will implement a priority inheritance mechanism to prevent the priority inversion problem when using locks.
 
@@ -26,10 +27,9 @@ Yet another problem that occurs due to the interactions between process synchron
 There are many solutions in the literature to solve the problem of priority inversion. In this lab, you will implement one such solution discussed in our lectures: priority inheritance protocol for locks. Other solutions, for example, can be found on Wikipedia.
 
  
-2. Interfaces to Implement
+####2. Interfaces to Implement
 
 Basic Locks
-
 
 For this lab you must implement the entire readers/writer lock system. This includes code or functions to:
 
