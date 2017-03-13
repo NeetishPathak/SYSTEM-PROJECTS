@@ -1,3 +1,5 @@
+###READER/WRITER LOCKS
+
 This project is about Reader/Writer Lock Implementation with priority inheritance in the XINU OS kernel . A basic understanding of Operating System processes, scheduling and synchronization is desired.
 A detailed version of the problem statement is found [here](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/Problem_Statement.md).
 
@@ -52,7 +54,8 @@ Let's look how a lock struct looks like. Please look at the file [lock.h](https:
 	
 In this system, the total number of allowed locks are 50. Hence, a counter can be handy to keep a track of number of times a lock is created. Also lprocbitmask is can be useful to keep track of all the processes that are acquiring this lock. The number of processes supported in the system at any moment is 50. So bitmask length of 64 is sufficient to keep a check if a particular process is acquiring this lock.
  
-Implemenation files:
+Implementation files:
+
 [linit.c](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/sys/linit.c)
 This file initializes all the locks with initial default state as FREE
 
