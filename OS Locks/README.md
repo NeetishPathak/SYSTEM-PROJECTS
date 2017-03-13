@@ -1,4 +1,7 @@
 This project is about Reader/Writer Lock Implementation with priority inheritance in the XINU OS kernel . A basic understanding of Operating System processes, scheduling and synchronization is desired.
+A detailed version of the problem statement is found [here](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/Problem_Statement.md).
+
+To build the project, just use make command to run the [Makefile](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/compile/Makefile) file
 
 ####Motivation:
 The reader/writer locks are used to synchronize access to shared data structure. A lock can be acquired for read and write operations. A lock acquired for reading can be shared by other reader processes but a lock acquired for writing should have exclusive access. The scheduling of the processes will happen as per their priority in the system and hence it should be ensured that the system does not enter in a deadlock condition to handle synchronization.
@@ -32,25 +35,40 @@ For semaphore implementation:
 wait.c, signal.c, screate.c, sdelete.c  (These are the original semaphore files in the XINU os)
 
 For lock implementation:
-lcreate.c, ldelete.c, linit.c, lock.c, releaseall.c (These are the files that are created for lock implementation)
+lcreate.c, ldelete.c, linit.c, lock.c, releaseall.c (These are the files that are created for lock implementation
 
-linit.c : initialize a data structure for stroing locks
+Let's look how a lock struct looks like. Please look at the file [lock.h](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/h/lock.h) for other macros and prototypes
 
+	struct lentry{
+	char lstate;	/*state of the lock*/
+	int lpriol;	/*priority of the lock*/
+	int lcnt;	/*count of the lock*/
+	int lqhead;	/*head of the lock*/
+	int lqtail;	/*tail of the lock*/
+	int ltype;	/*type of the lock*/ (Reader or writer)
+	long long lprocbitmask; /* bitmask to store all the processes holding this lock*/
+	int counter;	/*to keep track of the number of times this lock entry is initiated*/
+	};
+	
+In this system, the total number of allowed locks are 50. Hence, a counter can be handy to keep a track of number of times a lock is created. Also lprocbitmask is can be useful to keep track of all the processes that are acquiring this lock. The number of processes supported in the system at any moment is 50. So bitmask length of 64 is sufficient to keep a check if a particular process is acquiring this lock.
+ 
+Implemenation files:
+[linit.c](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/sys/linit.c)
+This file initializes all the locks with initial default state as FREE
 
-				struct lentry lockList[NLOCKS];
-				int nextlock;
-				void linit(){
-					struct lentry *lptr;
-					int i=0;
-					nextlock = NLOCKS-1;
+[lcreate.c](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/sys/lcreate.c)
+The function lcreate.c would an available LOCK ID. It changes the state of the lock from FREE to USED
 
-					/*initialize all the locks*/
+[ldelete.c](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/sys/ldelete.c)
+This function would change the state of the lock from USED to again FREE and make it available again
 
-					for(i = 0; i < NLOCKS; ++i){
-						(lptr = &lockList[i])->lstate = LFREE;
-						lptr->lqtail = 1 + (lptr->lqhead = newqueue());
-						lptr->lprocbitmask = 0;
-						lptr->counter = 0;
-					}
-				}
+[lock.c](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/sys/lock.c)
+Probably the most important function to assign a lock to a process as described above and in the problem statement
+A step worth nothing is how the bitmask is maintained using 'lptr->lprocbitmask |= (LL_ONE << currpid);'
+
+[releaseall.c](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Locks/sys/releaseall.c)
+Another most important function to release an acquired lock 
+Observe how the bitmask is reset when releasing the lock. lptr->lprocbitmask &= ~(LL_ONE << currpid);
+
+If hope these hints can guide you to develop the understanding of the implementation.
 
