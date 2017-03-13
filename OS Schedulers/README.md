@@ -52,7 +52,7 @@ This policy involves two additional computation steps (for epoch initialization 
 
 
 
-######3. Policy name:  Original Round robin scheduling policy:
+#####3. Policy name:  Original Round robin scheduling policy:
 
 Advantages:
 It ensures fairness in scheduling with equal time time quantum for all the processes (provided priority of runnable processes are similar). So average waiting time and response time for each process decreases.
