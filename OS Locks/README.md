@@ -29,7 +29,32 @@ The development in C language and the lock implementation is partly like semapho
 
 In order to fully understand the implementation for this code, it is advisable to go through the following files.
 For semaphore implementation:
-wait.c, signal.c, screate.c, sdelete.c
+wait.c, signal.c, screate.c, sdelete.c  (These are the original semaphore files in the XINU os)
 
 For lock implementation:
-lcreate.c, ldelete.c, linit.c, lock.c, releaseall.c
+lcreate.c, ldelete.c, linit.c, lock.c, releaseall.c (These are the files that are created for lock implementation)
+
+linit.c : initialize a data structure for stroing locks
+
+'''
+struct lentry lockList[NLOCKS];
+int nextlock;
+
+void linit(){
+	
+	struct lentry *lptr;
+	int i=0;
+	nextlock = NLOCKS-1;
+	
+	/*initialize all the locks*/
+
+	for(i = 0; i < NLOCKS; ++i){
+		
+		(lptr = &lockList[i])->lstate = LFREE;
+		lptr->lqtail = 1 + (lptr->lqhead = newqueue());
+		lptr->lprocbitmask = 0;
+		lptr->counter = 0;
+	}
+
+}
+'''
