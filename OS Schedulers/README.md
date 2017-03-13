@@ -23,7 +23,7 @@ to get an understnading of the the original and the two new scheduling algorithm
 The schedulers have been deployed for XINU OS kernel, which is a lightweight OS originally developed by Dr. Douglas Comer for educational use at Purdue University in the 1980s.More details details about it can be found [here](http://www.xinu.cs.purdue.edu/).
 The language of implementation is C
 
-In order to run the program us make command using the [Makefile](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Schedulers/compile/Makefile) in compile directory
+In order to run the program,  use make command using the [Makefile](https://github.com/NeetishPathak/SYSTEM-PROJECTS/blob/master/OS%20Schedulers/compile/Makefile) in compile directory
 
 ####After Thoughts
 There are certain pros and cons associated with each of the schedulers which are mentioned below
