@@ -29,7 +29,7 @@ The following sniiped is useful to understand how the whole file is read to coun
 - Then assuming T threads are to be created, split the block size for each of the threads using (Total_Size)/(T)
 - create the thread using 
 
- rc = pthread_create(__Reference to thread__, NULL, __Thread function Ptr__, __Arg (Some Data Structure)__)); 
+ `rc = pthread_create(__Reference to thread__, NULL, __Thread function Ptr__, __Arg (Some Data Structure)__)); `
  
  
 - After initailizing all the threads, wait for threads to finish  using `pthread_join(threads[t], NULL);` before the main function finishes
