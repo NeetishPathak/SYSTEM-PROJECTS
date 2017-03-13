@@ -27,8 +27,14 @@ The idle task is the task with the absolute lowest priority in a multitasking sy
 #####Steps:
 
 1) Identify all the tasks running in the system and change their priority to minimum
+
 2) Make the priority of the IDLE task maximum.
+
 3) Get a BaseCount for CPU clocks used. Let's call it BASE_CNT
+
 4) Raise the priority of the other tasks to their original values
+
 5) Now get the CPU clocks count . Lets call it N_CNT
+
 6) Then CPU utilization is calculated as (BASE_CNT - N_CNT)/BASE_CNT
+
